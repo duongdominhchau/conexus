@@ -8,5 +8,22 @@ edition = "2024"
 axum = "0.8.4"
 sqlx = { version = "0.8.6", features = ["postgres"] }
 tokio = { version = "1.47.1", features = ["full"] }
+tower = { version = "0.5.2" }
+tower-http = { version = "0.6.6", features = [
+    "compression-br",
+    "compression-deflate",
+    "compression-gzip",
+    "compression-zstd",
+
+    "decompression-br",
+    "decompression-deflate",
+    "decompression-gzip",
+    "decompression-zstd",
+
+    "normalize-path",
+    "request-id",
+    "trace",
+    "util",
+] }
 tracing = "0.1.41"
 tracing-subscriber = { version = "0.3.20", features = ["env-filter", "json"] }
