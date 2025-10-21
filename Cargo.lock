@@ -91,6 +91,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "021e862c184ae977658b36c4500f7feac3221ca5da43e3f25bd04ab6c79a29b5"
 dependencies = [
  "axum-core",
+ "axum-macros",
  "bytes",
  "form_urlencoded",
  "futures-util",
@@ -136,6 +137,17 @@ dependencies = [
  "tower-layer",
  "tower-service",
  "tracing",
+]
+
+[[package]]
+name = "axum-macros"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "604fde5e028fea851ce1d8570bbdc034bec850d157f7569d10f347d06808c05c"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
 ]
 
 [[package]]
@@ -1447,6 +1459,8 @@ dependencies = [
  "sha2",
  "smallvec",
  "thiserror",
+ "tokio",
+ "tokio-stream",
  "tracing",
  "url",
 ]
@@ -1485,6 +1499,7 @@ dependencies = [
  "sqlx-postgres",
  "sqlx-sqlite",
  "syn",
+ "tokio",
  "url",
 ]
 
@@ -1725,6 +1740,17 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "tokio-stream"
+version = "0.1.17"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "eca58d7bba4a75707817a2c44174253f9236b2d5fbd055602e9d5c07c139a047"
+dependencies = [
+ "futures-core",
+ "pin-project-lite",
+ "tokio",
 ]
 
 [[package]]

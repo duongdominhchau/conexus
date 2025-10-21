@@ -1,0 +1,6 @@
+[tools]
+"cargo:sqlx-cli" = "latest"
+
+[env]
+_.file = '.env'
+DATABASE_URL = "{{env.CONEXUS_DB_PROTOCOL}}://{{env.CONEXUS_DB_USER}}:{{env.CONEXUS_DB_PASSWORD}}@{{env.CONEXUS_DB_HOST}}:{{env.CONEXUS_DB_PORT}}/{{env.CONEXUS_DB_NAME}}"
