@@ -14,6 +14,8 @@ use tracing::info;
 
 use tracing_subscriber::{EnvFilter, layer::SubscriberExt, registry, util::SubscriberInitExt};
 
+mod bookmarks;
+
 fn setup_tracing_subscriber() {
     registry()
         .with(EnvFilter::try_from_default_env().unwrap_or_else(|_| "debug".into()))
@@ -50,7 +52,8 @@ async fn health_check_handler(State(pool): State<PgPool>) -> String {
 fn create_router(pool: PgPool) -> Router {
     Router::new()
         .route("/health_check", get(health_check_handler))
-        .with_state(pool)
+        .nest("/bookmarks", bookmarks::create_router())
+        .with_state(pool.clone())
         .layer(
             ServiceBuilder::new()
                 .layer(NormalizePathLayer::trim_trailing_slash())
