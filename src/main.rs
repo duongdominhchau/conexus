@@ -1,6 +1,8 @@
+use std::time::Duration;
+
 use axum::{Router, extract::State, routing::get};
 use sqlx::{PgPool, postgres::PgPoolOptions};
-use tokio::net::TcpListener;
+use tokio::{net::TcpListener, signal};
 use tower::ServiceBuilder;
 use tower_http::{
     ServiceBuilderExt,
@@ -8,6 +10,7 @@ use tower_http::{
     decompression::RequestDecompressionLayer,
     normalize_path::NormalizePathLayer,
     request_id::MakeRequestUuid,
+    timeout::TimeoutLayer,
     trace::{DefaultMakeSpan, DefaultOnResponse, TraceLayer},
 };
 use tracing::info;
@@ -65,8 +68,33 @@ fn create_router(pool: PgPool) -> Router {
                         .make_span_with(DefaultMakeSpan::new().include_headers(true))
                         .on_response(DefaultOnResponse::new().include_headers(true)),
                 )
-                .propagate_x_request_id(),
+                .propagate_x_request_id()
+                .layer(TimeoutLayer::new(Duration::from_secs(30))),
         )
+}
+
+async fn shutdown_signal() {
+    let ctrl_c = async {
+        signal::ctrl_c()
+            .await
+            .expect("failed to install Ctrl+C handler");
+    };
+
+    #[cfg(unix)]
+    let terminate = async {
+        signal::unix::signal(signal::unix::SignalKind::terminate())
+            .expect("failed to install signal handler")
+            .recv()
+            .await;
+    };
+
+    #[cfg(not(unix))]
+    let terminate = std::future::pending::<()>();
+
+    tokio::select! {
+        _ = ctrl_c => {},
+        _ = terminate => {},
+    }
 }
 
 #[tokio::main]
@@ -78,5 +106,8 @@ async fn main() {
     let listener = TcpListener::bind("0.0.0.0:3000").await.unwrap();
 
     info!("Starting server on port 3000...");
-    axum::serve(listener, app).await.unwrap();
+    axum::serve(listener, app)
+        .with_graceful_shutdown(shutdown_signal())
+        .await
+        .unwrap();
 }
